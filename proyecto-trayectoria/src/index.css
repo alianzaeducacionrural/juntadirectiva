@@ -269,7 +269,8 @@ body {
 .presentacion-bienvenida-titulo {
   font-size: 4rem;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
   line-height: 1.15;
   max-width: 80vw;
   background: linear-gradient(90deg, #f4a53f, #ef4d7a 45%, #a55de2 75%, #5b8def);
