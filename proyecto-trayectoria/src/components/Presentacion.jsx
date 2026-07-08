@@ -295,7 +295,7 @@ function SlideAgenda() {
         {AGENDA.map((item) => (
           <li key={item.numero} className="presentacion-agenda-item">
             <span className="presentacion-agenda-numero">{item.numero}</span>
-            <span>{item.titulo}</span>
+            <span className="presentacion-agenda-texto">{item.titulo}</span>
           </li>
         ))}
       </ol>
@@ -362,28 +362,33 @@ function SlideQR() {
   );
 }
 
-// Collage de cierre del punto 3: la foto "Actual" de cada profesional, con
-// una leve rotación alterna (vía nth-child en CSS) para que no se vea como
-// una grilla plana, y la frase superpuesta en una tarjeta de vidrio.
+// Collage de cierre del punto 3: la foto "Actual" de cada profesional
+// enmarcando el texto arriba y abajo (no debajo, para que ninguna quede
+// tapada ni oscurecida), con una leve rotación alterna (vía nth-child en
+// CSS) para que no se vea como una grilla plana.
 function SlideHuellas({ profesionales }) {
   const fotos = profesionales.filter((p) => p.imagenes?.Actual);
+  const mitad = Math.ceil(fotos.length / 2);
+  const filaArriba = fotos.slice(0, mitad);
+  const filaAbajo = fotos.slice(mitad);
+
+  function fila(personas, offset) {
+    return personas.map((persona, i) => (
+      <motion.img
+        key={persona.carpeta}
+        className="presentacion-huellas-foto"
+        src={`${import.meta.env.BASE_URL}profesionales/${persona.carpeta}/${persona.imagenes.Actual}`}
+        alt=""
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: (offset + i) * 0.05, ease: 'easeOut' }}
+      />
+    ));
+  }
 
   return (
     <div className="presentacion-huellas">
-      <div className="presentacion-huellas-collage">
-        {fotos.map((persona, i) => (
-          <motion.img
-            key={persona.carpeta}
-            className="presentacion-huellas-foto"
-            src={`${import.meta.env.BASE_URL}profesionales/${persona.carpeta}/${persona.imagenes.Actual}`}
-            alt=""
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: i * 0.06, ease: 'easeOut' }}
-          />
-        ))}
-      </div>
-      <div className="presentacion-huellas-overlay" />
+      <div className="presentacion-huellas-fila">{fila(filaArriba, 0)}</div>
       <div className="presentacion-huellas-tarjeta">
         <h1 className="presentacion-momento-titulo">{HUELLAS.titulo}</h1>
         {HUELLAS.parrafos.map((texto, i) => (
@@ -392,6 +397,7 @@ function SlideHuellas({ profesionales }) {
           </p>
         ))}
       </div>
+      <div className="presentacion-huellas-fila">{fila(filaAbajo, filaArriba.length)}</div>
     </div>
   );
 }
