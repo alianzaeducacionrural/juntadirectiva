@@ -2,30 +2,28 @@
 // Se muestran como pantallas dentro de la misma presentación, con el mismo
 // estilo visual, para que todo el evento corra desde una sola ventana.
 
-export const NOMBRE_ACTIVIDAD = 'De la Raíz a la Huella';
+export const NOMBRE_ACTIVIDAD = 'De la Raíz a la Huella - Mis proyectos para la vida';
 
 export const BIENVENIDA = {
   titulo: 'Bienvenidos equipo al mejor microcentro',
 };
 
-// Los 4 puntos de la agenda del encuentro. El punto 3 usa el nombre real de
-// la actividad en vez de un título genérico.
+// Los 4 puntos de la agenda del encuentro. El punto 3 usa el nombre completo
+// del instrumento de gobierno; la pantalla de QR y el formulario usan el
+// nombre corto de la actividad (NOMBRE_ACTIVIDAD).
 export const AGENDA = [
   { numero: 1, titulo: 'Oración' },
   { numero: 2, titulo: 'Reflexión' },
-  { numero: 3, titulo: NOMBRE_ACTIVIDAD },
-  { numero: 4, titulo: 'Evaluación' },
+  { numero: 3, titulo: `Instrumento de Gobierno: ${NOMBRE_ACTIVIDAD}` },
+  { numero: 4, titulo: 'Valoración de las Actividades de Conjunto' },
 ];
 
 // Evidencias de aprendizaje de la actividad completa (para la pantalla que
-// va antes de arrancar el punto 1). Generadas a partir del diseño de la
-// actividad: el registro escrito de las 3 preguntas, el reconocimiento en
-// vivo frente al equipo, y el cierre con indicadores en la etapa de
-// Evaluación.
+// va antes de arrancar el punto 1).
 export const EVIDENCIAS_APRENDIZAJE = [
-  'Reconocimiento colectivo, en vivo, de la historia y evolución personal de cada integrante del equipo.',
-  'Fortalecimiento del sentido de pertenencia e identidad de equipo mediante el relato compartido de trayectorias individuales.',
-  'Identificación explícita del propósito y el legado que cada profesional quiere dejar en su labor educativa.',
+  'Construyo identidad colectiva a partir del diálogo, el reconocimiento y la valoración de las trayectorias de vida de los integrantes del equipo.',
+  'Sustento de manera reflexiva mi historia de vida, articulando mis raíces, experiencias significativas y huellas personales para comprender mi proceso de construcción identitaria.',
+  'Valoro las experiencias de vida de mis compañeros, identificando los aprendizajes que aportan a la construcción de proyectos para la vida individuales y colectivos.',
 ];
 
 export const ORACION = {
@@ -44,12 +42,19 @@ export const REFLEXION = {
   video: 'Reflexión.mp4',
 };
 
-// Umbral usado para el "indicador de completitud de reflexión" (sección 11
-// del plan): promedio de caracteres de las 3 respuestas de una persona para
-// considerarla una reflexión "profunda". Es una heurística, ajústala si hace
-// falta.
-export const UMBRAL_REFLEXION_PROFUNDA = 60;
+// Pantalla de cierre del punto 3: collage con la foto "Actual" de todos los
+// profesionales, justo antes de pasar al punto 4.
+export const HUELLAS = {
+  titulo: 'Las huellas que dejamos',
+  parrafos: [
+    'Cada paso que damos deja una huella. Algunas se borran con el tiempo, pero otras permanecen en el corazón de quienes comparten el camino con nosotros.',
+    'Durante este proceso hemos comprendido que nuestras raíces, experiencias y aprendizajes no solo construyen nuestra historia, sino también la forma en que impactamos la vida de los demás. Cada palabra, cada gesto de apoyo y cada desafío superado han dejado una marca en este equipo.',
+    'Que las huellas de este camino nos recuerden siempre de dónde venimos, quiénes somos y el compromiso de seguir construyendo proyectos para la vida con propósito, esperanza y solidaridad.',
+  ],
+};
 
-// Tamaño real del equipo según el plan (sección 1), independiente de cuántas
-// carpetas de materiales existan hoy en Public/Profesionales.
-export const TOTAL_EQUIPO = 18;
+// Punto 4 de la agenda: solo título y una pregunta, sin indicadores.
+export const EVALUACION = {
+  titulo: 'Valoración de las Actividades de Conjunto',
+  pregunta: '¿Qué me llevo de la actividad de conjunto?',
+};

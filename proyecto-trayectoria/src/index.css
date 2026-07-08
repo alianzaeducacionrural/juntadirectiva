@@ -363,6 +363,93 @@ body {
 }
 
 
+.presentacion-huellas {
+  position: relative;
+  width: 92vw;
+  height: 86vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.presentacion-huellas-collage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-auto-rows: 150px;
+  gap: 14px;
+  padding: 20px;
+}
+
+.presentacion-huellas-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+.presentacion-huellas-foto:nth-child(4n) {
+  transform: rotate(-5deg);
+}
+
+.presentacion-huellas-foto:nth-child(4n + 1) {
+  transform: rotate(4deg);
+}
+
+.presentacion-huellas-foto:nth-child(4n + 2) {
+  transform: rotate(-3deg) translateY(6px);
+}
+
+.presentacion-huellas-foto:nth-child(4n + 3) {
+  transform: rotate(3deg) translateY(-6px);
+}
+
+.presentacion-huellas-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(8, 8, 15, 0.55) 0%,
+    rgba(8, 8, 15, 0.9) 58%,
+    rgba(8, 8, 15, 0.97) 100%
+  );
+}
+
+.presentacion-huellas-tarjeta {
+  position: relative;
+  z-index: 1;
+  max-width: 60vw;
+  max-height: 78vh;
+  overflow-y: auto;
+  background: rgba(20, 18, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  padding: 40px 56px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 60px -10px var(--color-etapa, transparent);
+  text-align: center;
+}
+
+.presentacion-huellas-tarjeta .presentacion-momento-titulo {
+  margin-bottom: 26px;
+}
+
+.presentacion-huellas-parrafo {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #f1f1f5;
+  text-align: left;
+  margin: 0 0 16px;
+}
+
+.presentacion-huellas-parrafo:last-child {
+  margin-bottom: 0;
+}
+
 .presentacion-video {
   width: 72vw;
   max-width: 1100px;
@@ -375,32 +462,6 @@ body {
   border: none;
   border-radius: 16px;
   background: #000;
-}
-
-.presentacion-stats {
-  display: flex;
-  gap: 6vw;
-  margin-top: 12px;
-}
-
-.presentacion-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.presentacion-stat-numero {
-  font-size: 5rem;
-  font-weight: 800;
-  color: var(--color-etapa, #4dbd74);
-  filter: drop-shadow(0 0 30px var(--color-etapa, transparent));
-}
-
-.presentacion-stat-etiqueta {
-  margin-top: 8px;
-  font-size: 1.1rem;
-  color: #ccc;
-  text-align: center;
 }
 
 .presentacion-pregunta {

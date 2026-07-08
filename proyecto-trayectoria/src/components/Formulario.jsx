@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { preguntas } from '../data/preguntas.js';
+import { NOMBRE_ACTIVIDAD } from '../data/agenda.js';
 import { enviarRespuesta } from '../services/sheetsApi.js';
 import FondoAnimado from './FondoAnimado.jsx';
 
@@ -64,7 +65,7 @@ export default function Formulario() {
     <div className="formulario-pagina">
       <FondoAnimado color={COLOR_FORMULARIO} />
       <form className="formulario-tarjeta" onSubmit={manejarEnvio}>
-        <h1 className="formulario-titulo">De la Raíz a la Huella</h1>
+        <h1 className="formulario-titulo">{NOMBRE_ACTIVIDAD}</h1>
         <p className="formulario-subtitulo">Actividad de conjunto — Punto 3</p>
         <p className="formulario-intro">
           Momento 1 · Mis raíces ya quedó contado en tu historia. Ahora completemos los otros tres momentos.

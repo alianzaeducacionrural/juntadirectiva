@@ -8,12 +8,12 @@ import { MOMENTOS } from '../data/momentos.js';
 import {
   AGENDA,
   BIENVENIDA,
+  EVALUACION,
   EVIDENCIAS_APRENDIZAJE,
+  HUELLAS,
   NOMBRE_ACTIVIDAD,
   ORACION,
   REFLEXION,
-  TOTAL_EQUIPO,
-  UMBRAL_REFLEXION_PROFUNDA,
 } from '../data/agenda.js';
 import FondoAnimado from './FondoAnimado.jsx';
 
@@ -30,6 +30,7 @@ const COLOR_EVIDENCIAS = '#c084fc';
 const COLOR_ORACION = '#e8b74d';
 const COLOR_REFLEXION = '#3fb5c8';
 const COLOR_QR = '#22c55e';
+const COLOR_HUELLAS = '#e0793f';
 const COLOR_EVALUACION = '#4dbd74';
 
 function lanzarConfetti(color) {
@@ -47,15 +48,34 @@ function lanzarConfetti(color) {
 // (no hay panel de facilitador eligiendo el orden). Quien no ha respondido
 // todavía queda al final, en el orden original, para que nadie se quede
 // afuera del reconocimiento.
-function construirSecuencia(profesionales, respuestasPorNombre) {
+//
+// `personasFinalizadas` son los carpeta ya presentados hasta ahora — van
+// primero, en el orden en que ya se mostraron (congelado, no se reordenan).
+// El resto ("por presentar") se recalcula cada vez con los datos más
+// recientes, así que si llega un nuevo registro mientras el facilitador
+// avanza, esa persona puede aparecer antes que alguien que todavía no ha
+// respondido, sin desordenar a quienes ya salieron en pantalla.
+function construirSecuencia(profesionales, respuestasPorNombre, personasFinalizadas) {
+  const finalizadasSet = new Set(personasFinalizadas);
+  const yaFinalizadas = personasFinalizadas
+    .map((carpeta) => profesionales.find((p) => p.carpeta === carpeta))
+    .filter(Boolean);
+
+  const porPresentar = profesionales.filter((p) => !finalizadasSet.has(p.carpeta));
   const conRespuesta = [];
   const sinRespuesta = [];
-  for (const persona of profesionales) {
+  for (const persona of porPresentar) {
     const respuesta = respuestasPorNombre[persona.nombre];
     if (respuesta?.timestamp) conRespuesta.push({ persona, respuesta });
     else sinRespuesta.push({ persona, respuesta });
   }
   conRespuesta.sort((a, b) => new Date(a.respuesta.timestamp) - new Date(b.respuesta.timestamp));
+
+  const personasEnOrden = [
+    ...yaFinalizadas.map((persona) => ({ persona, respuesta: respuestasPorNombre[persona.nombre] })),
+    ...conRespuesta,
+    ...sinRespuesta,
+  ];
 
   const slides = [
     { tipo: 'bienvenida' },
@@ -65,28 +85,14 @@ function construirSecuencia(profesionales, respuestasPorNombre) {
     { tipo: 'reflexion' },
     { tipo: 'qr' },
   ];
-  for (const { persona, respuesta } of [...conRespuesta, ...sinRespuesta]) {
+  for (const { persona, respuesta } of personasEnOrden) {
     for (const etapa of ETAPAS) {
       slides.push({ tipo: 'persona', persona, respuesta, etapa });
     }
   }
+  slides.push({ tipo: 'huellas' });
   slides.push({ tipo: 'evaluacion' });
   return slides;
-}
-
-function calcularIndicadores(respuestasPorNombre) {
-  const respuestas = Object.values(respuestasPorNombre);
-  const numRespondieron = respuestas.length;
-  const participacion = Math.round((numRespondieron / TOTAL_EQUIPO) * 100);
-
-  const profundas = respuestas.filter((r) => {
-    const largos = [r.respuesta1, r.respuesta2, r.respuesta3].map((t) => (t || '').length);
-    const promedio = largos.reduce((a, b) => a + b, 0) / largos.length;
-    return promedio >= UMBRAL_REFLEXION_PROFUNDA;
-  }).length;
-  const completitud = numRespondieron > 0 ? Math.round((profundas / numRespondieron) * 100) : 0;
-
-  return { numRespondieron, participacion, completitud };
 }
 
 export default function Presentacion() {
@@ -94,8 +100,23 @@ export default function Presentacion() {
   const [respuestasPorNombre, setRespuestasPorNombre] = useState({});
   const [cargando, setCargando] = useState(true);
   const [indiceSlide, setIndiceSlide] = useState(0);
+  const [personasFinalizadas, setPersonasFinalizadas] = useState([]);
 
   const ultimaRevelacion = useRef(null);
+  // El listener de teclado solo se reengancha cuando `secuencia` cambia (ver
+  // más abajo), así que `avanzar` puede quedar con un closure viejo de
+  // `indiceSlide` entre esos reenganches — de ahí el ref, para leer siempre
+  // el índice real en el momento del click/tecla, no el de cuando se creó
+  // el closure.
+  const indiceSlideRef = useRef(indiceSlide);
+  useEffect(() => {
+    indiceSlideRef.current = indiceSlide;
+  }, [indiceSlide]);
+  // Evita que una segunda tecla/click, presionada mientras el refetch de una
+  // etapa "Final" todavía está en vuelo, dispare otro avanzar() concurrente:
+  // sin esto, dos llamadas solapadas terminan sumando +2 al índice (cada una
+  // resuelve su propio setIndiceSlide) y se salta una diapositiva completa.
+  const avanzandoRef = useRef(false);
 
   useEffect(() => {
     async function cargar() {
@@ -122,12 +143,36 @@ export default function Presentacion() {
   }, []);
 
   const secuencia = useMemo(
-    () => (profesionales.length ? construirSecuencia(profesionales, respuestasPorNombre) : []),
-    [profesionales, respuestasPorNombre]
+    () => (profesionales.length ? construirSecuencia(profesionales, respuestasPorNombre, personasFinalizadas) : []),
+    [profesionales, respuestasPorNombre, personasFinalizadas]
   );
 
-  function avanzar() {
-    setIndiceSlide((i) => Math.min(i + 1, secuencia.length - 1));
+  // Justo al salir del último momento ("Final") de una persona, se refrescan
+  // las respuestas por si llegó un registro nuevo mientras tanto — así quien
+  // sigue en pantalla es quien realmente corresponde según el orden de
+  // llegada, no solo el orden que se conocía cuando se abrió la presentación.
+  async function avanzar() {
+    if (avanzandoRef.current) return;
+    avanzandoRef.current = true;
+    try {
+      const actual = secuencia[indiceSlideRef.current];
+      if (actual?.tipo === 'persona' && actual.etapa === 'Final') {
+        setPersonasFinalizadas((prev) =>
+          prev.includes(actual.persona.carpeta) ? prev : [...prev, actual.persona.carpeta]
+        );
+        try {
+          const respuestas = await obtenerRespuestas();
+          const porNombre = {};
+          for (const r of respuestas) porNombre[r.nombre] = r;
+          setRespuestasPorNombre(porNombre);
+        } catch {
+          // sin conexión momentánea: se sigue con los datos que ya había.
+        }
+      }
+      setIndiceSlide((i) => Math.min(i + 1, secuencia.length - 1));
+    } finally {
+      avanzandoRef.current = false;
+    }
   }
 
   function retroceder() {
@@ -146,7 +191,7 @@ export default function Presentacion() {
     }
     window.addEventListener('keydown', manejarTecla);
     return () => window.removeEventListener('keydown', manejarTecla);
-  }, [secuencia.length]);
+  }, [secuencia]);
 
   const slide = secuencia[indiceSlide];
 
@@ -183,6 +228,7 @@ export default function Presentacion() {
     oracion: COLOR_ORACION,
     reflexion: COLOR_REFLEXION,
     qr: COLOR_QR,
+    huellas: COLOR_HUELLAS,
     evaluacion: COLOR_EVALUACION,
   };
   const color = slide.tipo === 'persona' ? COLOR_ETAPA[slide.etapa] : COLOR_POR_TIPO[slide.tipo];
@@ -220,7 +266,8 @@ export default function Presentacion() {
           {slide.tipo === 'reflexion' && <SlideReflexion />}
           {slide.tipo === 'qr' && <SlideQR />}
           {slide.tipo === 'persona' && <SlidePersona slide={slide} />}
-          {slide.tipo === 'evaluacion' && <SlideEvaluacion respuestasPorNombre={respuestasPorNombre} />}
+          {slide.tipo === 'huellas' && <SlideHuellas profesionales={profesionales} />}
+          {slide.tipo === 'evaluacion' && <SlideEvaluacion />}
         </motion.div>
       </AnimatePresence>
     </div>
@@ -315,6 +362,40 @@ function SlideQR() {
   );
 }
 
+// Collage de cierre del punto 3: la foto "Actual" de cada profesional, con
+// una leve rotación alterna (vía nth-child en CSS) para que no se vea como
+// una grilla plana, y la frase superpuesta en una tarjeta de vidrio.
+function SlideHuellas({ profesionales }) {
+  const fotos = profesionales.filter((p) => p.imagenes?.Actual);
+
+  return (
+    <div className="presentacion-huellas">
+      <div className="presentacion-huellas-collage">
+        {fotos.map((persona, i) => (
+          <motion.img
+            key={persona.carpeta}
+            className="presentacion-huellas-foto"
+            src={`${import.meta.env.BASE_URL}profesionales/${persona.carpeta}/${persona.imagenes.Actual}`}
+            alt=""
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: i * 0.06, ease: 'easeOut' }}
+          />
+        ))}
+      </div>
+      <div className="presentacion-huellas-overlay" />
+      <div className="presentacion-huellas-tarjeta">
+        <h1 className="presentacion-momento-titulo">{HUELLAS.titulo}</h1>
+        {HUELLAS.parrafos.map((texto, i) => (
+          <p key={i} className="presentacion-huellas-parrafo">
+            {texto}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SlidePersona({ slide }) {
   const { persona, respuesta, etapa } = slide;
   const momento = MOMENTOS[etapa];
@@ -364,23 +445,11 @@ function SlidePersona({ slide }) {
   );
 }
 
-function SlideEvaluacion({ respuestasPorNombre }) {
-  const { numRespondieron, participacion, completitud } = calcularIndicadores(respuestasPorNombre);
+function SlideEvaluacion() {
   return (
     <div className="presentacion-texto-completo">
-      <h1 className="presentacion-momento-titulo">Evaluación</h1>
-      <div className="presentacion-stats">
-        <div className="presentacion-stat">
-          <span className="presentacion-stat-numero">{participacion}%</span>
-          <span className="presentacion-stat-etiqueta">
-            Participación · {numRespondieron} de {TOTAL_EQUIPO}
-          </span>
-        </div>
-        <div className="presentacion-stat">
-          <span className="presentacion-stat-numero">{completitud}%</span>
-          <span className="presentacion-stat-etiqueta">Reflexiones profundas</span>
-        </div>
-      </div>
+      <h1 className="presentacion-momento-titulo">{EVALUACION.titulo}</h1>
+      <p className="presentacion-pregunta">{EVALUACION.pregunta}</p>
     </div>
   );
 }
