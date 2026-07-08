@@ -9,6 +9,7 @@ import {
   AGENDA,
   BIENVENIDA,
   EVIDENCIAS_APRENDIZAJE,
+  NOMBRE_ACTIVIDAD,
   ORACION,
   REFLEXION,
   TOTAL_EQUIPO,
@@ -307,7 +308,8 @@ function SlideQR() {
 
   return (
     <div className="presentacion-texto-completo">
-      <h1 className="presentacion-momento-titulo">Escanea para responder</h1>
+      <h1 className="presentacion-momento-titulo">{NOMBRE_ACTIVIDAD}</h1>
+      <p className="presentacion-qr-subtitulo">Escanea para responder</p>
       <div className="presentacion-qr-tarjeta">{dataUrl && <img src={dataUrl} alt="Código QR del formulario" />}</div>
     </div>
   );
@@ -322,7 +324,7 @@ function SlidePersona({ slide }) {
 
   return (
     <>
-      <h1 className="presentacion-momento-titulo presentacion-momento-titulo--mayuscula">{momento.titulo}</h1>
+      <h1 className="presentacion-momento-titulo">{momento.titulo}</h1>
       <div className="presentacion-contenido">
         <div className="presentacion-imagen-wrap">
           {archivoImagen ? (

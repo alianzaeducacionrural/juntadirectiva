@@ -214,7 +214,8 @@ body {
 .presentacion-momento-titulo {
   font-size: 3.2rem;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   margin: 0 0 40px;
   text-align: center;
   background: linear-gradient(90deg, #ffffff, var(--color-etapa, #fff) 130%);
@@ -222,11 +223,6 @@ body {
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.35));
-}
-
-.presentacion-momento-titulo--mayuscula {
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
 .presentacion-texto-completo {
@@ -244,19 +240,21 @@ body {
   max-width: 100%;
 }
 
+/* La presentación es para pantalla de PC/proyector, no celular — se diseña
+   para un lienzo grande (min. ~1280px), no para caber en un viewport chico. */
 .presentacion-slide-oracion {
-  max-width: 82vw;
+  max-width: 78vw;
 }
 
 .presentacion-slide-oracion .presentacion-momento-titulo {
-  font-size: 2.2rem;
-  margin-bottom: 18px;
+  font-size: 2.6rem;
+  margin-bottom: 26px;
 }
 
 .presentacion-slide-oracion .presentacion-cuerpo-oracion {
-  font-size: 1.05rem;
-  line-height: 1.35;
-  max-height: 78vh;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  max-height: 80vh;
 }
 
 .presentacion-bienvenida-foto {
@@ -339,6 +337,13 @@ body {
   font-weight: 800;
 }
 
+.presentacion-qr-subtitulo {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #e5e2f5;
+  margin: -20px 0 32px;
+}
+
 .presentacion-qr-tarjeta {
   background: #fff;
   padding: 20px;
@@ -358,7 +363,8 @@ body {
 
 
 .presentacion-video {
-  width: 60vw;
+  width: 72vw;
+  max-width: 1100px;
   aspect-ratio: 16 / 9;
 }
 
