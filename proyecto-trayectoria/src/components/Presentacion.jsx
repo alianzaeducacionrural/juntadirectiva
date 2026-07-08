@@ -15,6 +15,7 @@ import {
   ORACION,
   REFLEXION,
 } from '../data/agenda.js';
+import { MICROCENTRO } from '../data/microcentro.js';
 import FondoAnimado from './FondoAnimado.jsx';
 
 const COLOR_ETAPA = {
@@ -25,6 +26,8 @@ const COLOR_ETAPA = {
 };
 
 const COLOR_BIENVENIDA = '#ff5f8f';
+const COLOR_MICROCENTRO = '#38bdf8';
+const COLOR_TITULO_SECCION = '#f4a53f';
 const COLOR_AGENDA = '#5b8def';
 const COLOR_EVIDENCIAS = '#c084fc';
 const COLOR_ORACION = '#e8b74d';
@@ -79,6 +82,10 @@ function construirSecuencia(profesionales, respuestasPorNombre, personasFinaliza
 
   const slides = [
     { tipo: 'bienvenida' },
+    { tipo: 'microcentro-info' },
+    { tipo: 'microcentro-agenda' },
+    { tipo: 'microcentro-lema' },
+    { tipo: 'titulo-seccion' },
     { tipo: 'agenda' },
     { tipo: 'evidencias' },
     { tipo: 'oracion' },
@@ -223,6 +230,10 @@ export default function Presentacion() {
 
   const COLOR_POR_TIPO = {
     bienvenida: COLOR_BIENVENIDA,
+    'microcentro-info': COLOR_MICROCENTRO,
+    'microcentro-agenda': COLOR_MICROCENTRO,
+    'microcentro-lema': COLOR_MICROCENTRO,
+    'titulo-seccion': COLOR_TITULO_SECCION,
     agenda: COLOR_AGENDA,
     evidencias: COLOR_EVIDENCIAS,
     oracion: COLOR_ORACION,
@@ -260,6 +271,10 @@ export default function Presentacion() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
           {slide.tipo === 'bienvenida' && <SlideBienvenida />}
+          {slide.tipo === 'microcentro-info' && <SlideMicrocentroInfo />}
+          {slide.tipo === 'microcentro-agenda' && <SlideMicrocentroAgenda />}
+          {slide.tipo === 'microcentro-lema' && <SlideMicrocentroLema />}
+          {slide.tipo === 'titulo-seccion' && <SlideTituloSeccion />}
           {slide.tipo === 'agenda' && <SlideAgenda />}
           {slide.tipo === 'evidencias' && <SlideEvidencias />}
           {slide.tipo === 'oracion' && <SlideOracion />}
@@ -283,6 +298,70 @@ function SlideBienvenida() {
         alt="El equipo"
       />
       <h1 className="presentacion-bienvenida-titulo">{BIENVENIDA.titulo}</h1>
+    </div>
+  );
+}
+
+function SlideMicrocentroInfo() {
+  return (
+    <div className="presentacion-texto-completo">
+      <p className="presentacion-microcentro-area">{MICROCENTRO.area}</p>
+      <h1 className="presentacion-momento-titulo">{MICROCENTRO.nombre}</h1>
+      <div className="presentacion-microcentro-datos">
+        <span>
+          <strong>Fecha:</strong> {MICROCENTRO.fecha}
+        </span>
+        <span>
+          <strong>Hora:</strong> {MICROCENTRO.hora}
+        </span>
+        <span>
+          <strong>Lugar:</strong> {MICROCENTRO.lugar}
+        </span>
+      </div>
+      <p className="presentacion-cuerpo presentacion-microcentro-objetivo">{MICROCENTRO.objetivoGeneral}</p>
+    </div>
+  );
+}
+
+function SlideMicrocentroAgenda() {
+  return (
+    <div className="presentacion-texto-completo">
+      <h1 className="presentacion-momento-titulo">Agenda de Trabajo</h1>
+      <div className="presentacion-microcentro-agenda-lista">
+        {MICROCENTRO.agenda.map((item) => (
+          <div className="presentacion-microcentro-agenda-item" key={item.hora}>
+            <span className="presentacion-microcentro-agenda-hora">{item.hora}</span>
+            <div className="presentacion-microcentro-agenda-texto">
+              <strong>{item.espacio}</strong>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SlideMicrocentroLema() {
+  return (
+    <div className="presentacion-texto-completo">
+      <h1 className="presentacion-momento-titulo">Lema del Segundo Microcentro</h1>
+      {MICROCENTRO.lemas.map((texto, i) => (
+        <p key={i} className="presentacion-cuerpo presentacion-microcentro-lema">
+          “{texto}”
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function SlideTituloSeccion() {
+  return (
+    <div className="presentacion-texto-completo">
+      <h1 className="presentacion-bienvenida-titulo">
+        Actividades de Conjunto
+        <br />
+        De la Raíz a la Huella
+      </h1>
     </div>
   );
 }

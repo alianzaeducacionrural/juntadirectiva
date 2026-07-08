@@ -66,10 +66,6 @@ export default function Formulario() {
       <FondoAnimado color={COLOR_FORMULARIO} />
       <form className="formulario-tarjeta" onSubmit={manejarEnvio}>
         <h1 className="formulario-titulo">{NOMBRE_ACTIVIDAD}</h1>
-        <p className="formulario-subtitulo">Actividad de conjunto — Punto 3</p>
-        <p className="formulario-intro">
-          Momento 1 · Mis raíces ya quedó contado en tu historia. Ahora completemos los otros tres momentos.
-        </p>
 
         {error && <p className="formulario-mensaje-error">{error}</p>}
 
@@ -87,9 +83,7 @@ export default function Formulario() {
 
         {preguntas.map((p) => (
           <div className="formulario-campo" key={p.id}>
-            <span className="formulario-momento">
-              Momento {p.momento.numero} · {p.momento.titulo}
-            </span>
+            <span className="formulario-momento">{p.momento.titulo}</span>
             <label htmlFor={p.id}>{p.momento.pregunta}</label>
             <textarea
               id={p.id}

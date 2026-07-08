@@ -43,27 +43,13 @@ body {
 .formulario-titulo {
   font-size: 1.8rem;
   font-weight: 800;
+  text-transform: uppercase;
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 24px;
   background: linear-gradient(90deg, #f4a53f, #ef4d7a 55%, #5b8def);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.formulario-subtitulo {
-  color: #9a95ad;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: -8px 0 20px;
-}
-
-.formulario-intro {
-  color: #c7c3d6;
-  font-size: 0.92rem;
-  margin-top: -8px;
-  margin-bottom: 24px;
 }
 
 .formulario-campo {
@@ -278,6 +264,72 @@ body {
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.35));
+}
+
+.presentacion-microcentro-area {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-etapa, #38bdf8);
+  margin: 0 0 10px;
+}
+
+.presentacion-microcentro-datos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 32px;
+  font-size: 1.2rem;
+  color: #e5e2f5;
+  margin: 8px 0 28px;
+}
+
+.presentacion-microcentro-datos strong {
+  color: #fff;
+}
+
+.presentacion-microcentro-objetivo {
+  max-width: 78vw;
+  font-size: 1.25rem;
+}
+
+.presentacion-microcentro-agenda-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 82vw;
+  max-height: 70vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.presentacion-microcentro-agenda-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.presentacion-microcentro-agenda-hora {
+  flex: 0 0 270px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-etapa, #38bdf8);
+  white-space: nowrap;
+}
+
+.presentacion-microcentro-agenda-texto strong {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.presentacion-microcentro-lema {
+  font-size: 1.7rem;
+  font-style: italic;
+  max-width: 74vw;
 }
 
 .presentacion-agenda-lista {
